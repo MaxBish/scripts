@@ -63,14 +63,20 @@ def do_cortex_api_call(api_call, post_data={}):
 
   
 def get_all_cortex_endpoints():
-  cortex_filter = {"request_data": {"search_from": 0, "search_to:": 100}}
+  cortex_filter = {
+	"request_data": {
+		"search_from": 0,
+		"search_to": 100
+	}
+  }
 
   all_endpoints = []
   fetched_amount = 100
   while fetched_amount == 100:
-    result = json.loads(do_cortex_api_call("endpoint/get_endpoints", cortex_filter).content)['reply']
+    result = json.loads(do_cortex_api_call("endpoint/get_endpoint", cortex_filter).content)['reply']
     fetched_endpoints = result['endpoints']
     all_endpoints.extend(fetched_endpoints)
+
     cortex_filter['request_data']['search_from'] = cortex_filter['request_data']['search_from'] + fetched_amount
     cortex_filter['request_data']['search_to'] = cortex_filter['request_data']['search_to'] + fetched_amount
 
