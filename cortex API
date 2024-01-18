@@ -67,7 +67,7 @@ def get_all_cortex_endpoints():
 
   all_endpoints = []
   fetched_amount = 100
-  while fetched_amount == 100
+  while fetched_amount == 100:
     result = json.loads(do_cortex_api_call("endpoint/get_endpoints", cortex_filter).content)['reply']
     fetched_endpoints = result['endpoints']
     all_endpoints.extend(fetched_endpoints)
