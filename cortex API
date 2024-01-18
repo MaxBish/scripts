@@ -56,7 +56,7 @@ def do_cortex_api_call(api_call, post_data={}):
         "x-xdr-auth-id": str(cortex_api_key_id),
         "Authorization": api_key_hash
     }
-    res = requests.post(url=api_url + api_call,
+    res = requests.post(url=cortex_api_url + api_call,
 						headers=headers,
 						json=post_data)
     return res
