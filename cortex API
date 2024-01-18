@@ -9,7 +9,6 @@ import os
 from flatten_json import flatten
 from ipaddress import ip_address
 from typing import Any, Dict, List
-import hvac
 
 import runzero
 from runzero.client import AuthError
@@ -23,18 +22,19 @@ from runzero.types import (
     ImportTask,
 )
 
-cortex_api_url = "particular tenant URL/public_api/v1/"
-cortex_api_key = "Your API Key"
-cortex_api_key_id = "key_id"
+cortex_api_url = "particular tenant API URL/public_api/v1/"
+cortex_api_key = "cortex API key"
+cortex_api_key_id = "cortex API key ID"
 
-rz_client_id = "runZero client ID"
-rz_client_secret = "runZero client secret"
+RUNZERO_CLIENT_ID = "runZero client ID"
+RUNZERO_CLIENT_SECRET = "runZero client secret"
 RUNZERO_BASE_URL = "https://console.runZero.com/api/v1.0"
-RUNZERO_ORG_ID = "runzero org ID"
-RUNZERO_SITE_NAME = "Primary"
+RUNZERO_ORG_ID = "runZero ORG ID"
+RUNZERO_SITE_NAME = "runZero Site Name"
 
-def do_cortex_api_call(api_call, post_data={}):
-  # Generate a 64 bytes random string
+def do_cortex_api_call(api_call, post_data=None):
+    post_data = post_data or {}
+    # Generate a 64 bytes random string
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
 
     # Get the current timestamp as milliseconds.
@@ -59,26 +59,28 @@ def do_cortex_api_call(api_call, post_data={}):
     res = requests.post(url=cortex_api_url + api_call,
 						headers=headers,
 						json=post_data)
+ 
     return res
 
   
 def get_all_cortex_endpoints():
-  cortex_filter = {
-	"request_data": {
-		"search_from": 0,
-		"search_to": 100
-	}
-  }
+  cortex_filter = {"request_data": {"search_from": 0, "search_to": 100}}
 
   all_endpoints = []
-  fetched_amount = 100
-  while fetched_amount == 100:
-    result = json.loads(do_cortex_api_call("endpoint/get_endpoint", cortex_filter).content)['reply']
+  page_size = 100
+  while True:
+    print("Making Cortex API call...")
+    result = json.loads(do_cortex_api_call("endpoints/get_endpoint", cortex_filter.copy()).content)['reply']
+        
     fetched_endpoints = result['endpoints']
     all_endpoints.extend(fetched_endpoints)
-
-    cortex_filter['request_data']['search_from'] = cortex_filter['request_data']['search_from'] + fetched_amount
-    cortex_filter['request_data']['search_to'] = cortex_filter['request_data']['search_to'] + fetched_amount
+    if len(fetched_endpoints) < page_size:
+        break
+        
+    cortex_filter['request_data']['search_from'] += page_size
+    cortex_filter['request_data']['search_to'] += page_size
+    
+  print(f"Loaded {len(all_endpoints):,d} endpoints")
 
   return all_endpoints
   
