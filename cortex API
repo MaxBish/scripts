@@ -53,7 +53,7 @@ def do_cortex_api_call(api_call, post_data={}):
     headers = {
         "x-xdr-timestamp": str(timestamp),
         "x-xdr-nonce": nonce,
-        "x-xdr-auth-id": str(api_key_id),
+        "x-xdr-auth-id": str(cortex_api_key_id),
         "Authorization": api_key_hash
     }
     res = requests.post(url=api_url + api_call,
