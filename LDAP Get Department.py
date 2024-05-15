@@ -30,4 +30,4 @@ for i in range(leng):
     fullname = conn.entries[i].cn
     department = conn.entries[i].department
     
-    print("user:\t{}\nname:\t{}\nemail:\t{}\n\n".format(user,fullname,email)) 
+    print("user:\t{}\nname:\t{}\ndepartment:\t{}\n\n".format(user,fullname,department)) 
