@@ -2,10 +2,10 @@ import ldap3
 import argparse
 import sys
 
-server = ldap3.Server('ldaps://specific LDAP server')
+server = ldap3.Server('ldaps://IP:port')
 conn = ldap3.Connection(server)
 conn.bind()
-basedn = 'dc=foobar,dc=dorq,dc=baz'
+basedn = 'dc=auroragov,dc=org'
 attribs = ['department']
 
 parser=argparse.ArgumentParser(
