@@ -5,7 +5,7 @@ import sys
 server = ldap3.Server('ldaps://IP:port')
 conn = ldap3.Connection(server)
 conn.bind()
-basedn = 'dc=auroragov,dc=org'
+basedn = 'dc=foo,dc=bar'
 attribs = ['department']
 
 parser=argparse.ArgumentParser(
