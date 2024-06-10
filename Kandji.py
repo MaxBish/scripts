@@ -210,6 +210,7 @@ def main():
 
     # Get the total number of devices
     device_inventory = get_devices(params=params_dict)
+    import_data_to_runzero(device_inventory)
     print(f"Total number of devices: {len(device_inventory)}")
 
 
