@@ -164,7 +164,7 @@ def kandji_api(method, endpoint, params=None, payload=None):
     return data
 
 
-def get_devices(params=None, ordering="serial_number"):
+def get_devices(params=None, ordering="device_name"):
     """Return device inventory."""
     count = 0
     # limit - set the number of records to return per API call
@@ -197,6 +197,32 @@ def get_devices(params=None, ordering="serial_number"):
         sys.exit()
 
     return data
+
+
+def build_assets():
+
+  params_dict = {}
+    
+  all_endpoints = get_devices(params=params_dict)
+  assets = []
+  for endpoint in all_endpoints:
+      custom_attrs = {}
+      custom_attrs['os_version'] = endpoint['os_version']
+      custom_attrs['agent_installed'] = endpoint['agent_installed']
+      custom_attrs['agent_version'] = endpoint['agent_version']
+
+      mac_address = None
+      if len(endpoint['mac_address']) > 0:
+         mac_address = endpoint['mac_address'][0]
+
+      assets.append(ImportAsset(
+         id=endpoint['device_id'],
+         networkInterfaces=[build_network_interface(ips=endpoint['ip'] + endpoint['ipv6'],mac=mac_address)],
+         hostnames=[endpoint['device_name']],
+         os_version=endpoint['os_version'],
+         customAttributes=custom_attrs
+      ))
+  return assets
 
 
 def import_data_to_runzero(assets: List[ImportAsset]):
@@ -256,9 +282,11 @@ def main():
     params_dict = {}
 
     # Get the total number of devices
-    device_inventory = get_devices(params=params_dict)
-    import_data_to_runzero(device_inventory)
+    device_inventory = build_assets()
     print(f"Total number of devices: {len(device_inventory)}")
+    
+    import_data_to_runzero(device_inventory)
+    
 
 
 if __name__ == "__main__":
