@@ -278,9 +278,6 @@ def main():
     print(f"Base URL: {BASE_URL}")
     print("")
 
-    # dict placeholder for params passed to api requests
-    params_dict = {}
-
     # Get the total number of devices
     device_inventory = build_assets()
     print(f"Total number of devices: {len(device_inventory)}")
