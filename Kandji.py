@@ -199,6 +199,53 @@ def get_devices(params=None, ordering="serial_number"):
     return data
 
 
+def import_data_to_runzero(assets: List[ImportAsset]):
+    """
+    The code below gives an example of how to create a custom source and upload valid assets from a CSV to a site using
+    the new custom source.
+    """
+    # create the runzero client
+    c = runzero.Client()
+
+    # try to log in using OAuth credentials
+    try:
+        c.oauth_login(RUNZERO_CLIENT_ID, RUNZERO_CLIENT_SECRET)
+    except AuthError as e:
+        print(f"login failed: {e}")
+        return
+
+    # create the site manager to get our site information
+    site_mgr = Sites(c)
+    site = site_mgr.get(RUNZERO_ORG_ID, RUNZERO_SITE_NAME)
+    if not site:
+        print(f"unable to find requested site")
+        return
+
+    # get or create the custom source manager and create a new custom source
+    custom_source_mgr = CustomIntegrationsAdmin(c)
+    my_asset_source = custom_source_mgr.get(name="kandji")
+    if my_asset_source:
+        source_id = my_asset_source.id
+    else:
+        my_asset_source = custom_source_mgr.create(name="kandji")
+        source_id = my_asset_source.id
+
+    # create the import manager to upload custom assets
+    import_mgr = CustomAssets(c)
+    import_task = import_mgr.upload_assets(
+        org_id=RUNZERO_ORG_ID,
+        site_id=site.id,
+        custom_integration_id=source_id,
+        assets=assets,
+        task_info=ImportTask(name="Kandji Sync"),
+    )
+
+    if import_task:
+        print(
+            f"task created! view status here: https://console.runzero.com/tasks?task={import_task.id}"
+        )
+
+
 def main():
     """Do the main logic."""
     print("")
