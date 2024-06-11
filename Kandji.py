@@ -224,6 +224,30 @@ def build_assets():
       ))
   return assets
 
+def build_network_interface(ips: List[str], mac: str = None) -> NetworkInterface:
+    """
+    This function converts a mac and a list of strings in either ipv4 or ipv6 format and creates a NetworkInterface that
+    is accepted in the ImportAsset
+    """
+    ip4s: List[IPv4Address] = []
+    ip6s: List[IPv6Address] = []
+    for ip in ips[:99]:
+        try:
+            ip_addr = ip_address(ip)
+            if ip_addr.version == 4:
+                ip4s.append(ip_addr)
+            elif ip_addr.version == 6:
+                ip6s.append(ip_addr)
+            else:
+                continue
+        except:
+            continue
+
+    if mac is None:
+        return NetworkInterface(ipv4Addresses=ip4s, ipv6Addresses=ip6s)
+    else:
+        return NetworkInterface(macAddress=mac, ipv4Addresses=ip4s, ipv6Addresses=ip6s)
+
 
 def import_data_to_runzero(assets: List[ImportAsset]):
     """
