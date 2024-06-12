@@ -1,6 +1,11 @@
 // Delete assets via query
 
-export_url = RUNZERO_BASE_URL + "/export/org/assets.json"
+import requests
+import json
+
+query = quote('_asset.protocol:tls AND tls.notAfterTS:<30days')
+
+export_url = 'https://console.runzero.com/api/v1.0/org/assets?search=query'
 headers = {"Authorization": f"Bearer {RUNZERO_ORG_TOKEN}"}
 params = {"search": f"site:{RUNZERO_SITE_ID}", "fields": "id"}
 resp = requests.get(url=export_url, headers=headers, params=params)
