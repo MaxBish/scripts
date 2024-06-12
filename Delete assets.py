@@ -1,4 +1,4 @@
-// Delete assets via query
+## Delete assets via query
 
 import requests
 import json
