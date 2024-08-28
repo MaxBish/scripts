@@ -79,7 +79,7 @@ def get_devices():
             break
 
         else:
-            query["page"] = query["page"] + 1
+            query["page"] = str(int(query["page"]) + 1)
 
         # breakout the response then append to the data list
         for record in response:
