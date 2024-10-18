@@ -1,7 +1,7 @@
 ## Automox!
 
+## importing dependencies
 import sys
-
 import requests
 
 import json
@@ -62,7 +62,7 @@ def get_devices():
       "exception": "0",
       "managed": "0",
       "limit": "500",
-      "page": "0",
+      "page": 0,
       "filters[is_compatible]": "true",
       "sortColumns[]": "is_compatible",
       "sortDir": "asc"
@@ -79,7 +79,7 @@ def get_devices():
             break
 
         else:
-            query["page"] = str(int(query["page"]) + 1)
+            query["page"] += 1
 
         # breakout the response then append to the data list
         for record in response:
@@ -120,13 +120,13 @@ def build_assets():
       ))
   return assets
 
-def build_network_interface(ips: List[str], mac: str = None) -> NetworkInterface:
+def build_network_interface(ips: list[str], mac: str = None) -> NetworkInterface:
     """
     This function converts a mac and a list of strings in either ipv4 or ipv6 format and creates a NetworkInterface that
     is accepted in the ImportAsset
     """
-    ip4s: List[IPv4Address] = []
-    ip6s: List[IPv6Address] = []
+    ip4s: list[IPv4Address] = []
+    ip6s: list[IPv6Address] = []
     for ip in ips[:99]:
         try:
             ip_addr = ip_address(ip)
