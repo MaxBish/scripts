@@ -1,6 +1,7 @@
 ## Automox!
 
 ## importing dependencies
+from ipaddress import ip_address
 import sys
 import requests
 
@@ -24,10 +25,10 @@ AUTOMOX_URL = "https://console.automox.com/api/servers"
 TOKEN = ""
 
 # runZero information
-RUNZERO_CLIENT_ID = "runZero client ID"
-RUNZERO_CLIENT_SECRET = "runZero client secret"
+RUNZERO_CLIENT_ID = "runZero Client ID"
+RUNZERO_CLIENT_SECRET = "runZero Client Secret"
 RUNZERO_BASE_URL = "https://console.runZero.com/api/v1.0"
-RUNZERO_ORG_ID = "runZero ORG ID"
+RUNZERO_ORG_ID = "runZero Org ID"
 RUNZERO_SITE_NAME = "runZero Site Name"
 
 ## API headers used in the requests
@@ -53,19 +54,8 @@ def get_devices():
 
     ## Automox query parameters when making API call
     query = {
-      "groupId": "0",
-      "PS_VERSION": "0",
-      "o": "0",
-      "pending": "0",
-      "patchStatus": "missing",
-      "policyId": "0",
-      "exception": "0",
-      "managed": "0",
       "limit": "500",
-      "page": 0,
-      "filters[is_compatible]": "true",
-      "sortColumns[]": "is_compatible",
-      "sortDir": "asc"
+      "page": "0"
     }
 
     # inventory
@@ -79,7 +69,7 @@ def get_devices():
             break
 
         else:
-            query["page"] += 1
+            query["page"] = str(int(query["page"]) + 1)
 
         # breakout the response then append to the data list
         for record in response:
@@ -102,14 +92,20 @@ def build_assets():
       custom_attrs['os_name'] = endpoint['os_name']
       custom_attrs['os_family'] = endpoint['os_family']
       custom_attrs['agent_version'] = endpoint['agent_version']
+      custom_attrs['compliant'] = str(endpoint['compliant'])
+      custom_attrs['last_logged_in_user'] = endpoint['last_logged_in_user']
+      custom_attrs['serial_number'] = endpoint['serial_number']
+      custom_attrs['agent_status'] = endpoint['status']['agent_status']
+
 
       mac_address = None
-      if len(endpoint['detail']['NICS']['MAC']) > 0:
-         mac_address = endpoint['detail']['NICS']['MAC']
+      if len(endpoint['detail']['NICS'][0]['MAC']) > 0:
+         mac_address = endpoint['detail']['NICS'][0]['MAC']
 
       ## handle IPs
       ips = []
       ips.append(endpoint['ip_addrs'])
+      ips.append(endpoint['ip_addrs_private'])
 
       assets.append(ImportAsset(
          id=endpoint['id'],
@@ -128,16 +124,13 @@ def build_network_interface(ips: list[str], mac: str = None) -> NetworkInterface
     ip4s: list[IPv4Address] = []
     ip6s: list[IPv6Address] = []
     for ip in ips[:99]:
-        try:
-            ip_addr = ip_address(ip)
+            ip_addr = ip_address(ip[0])
             if ip_addr.version == 4:
                 ip4s.append(ip_addr)
             elif ip_addr.version == 6:
                 ip6s.append(ip_addr)
             else:
                 continue
-        except:
-            continue
 
     if mac is None:
         return NetworkInterface(ipv4Addresses=ip4s, ipv6Addresses=ip6s)
@@ -145,7 +138,7 @@ def build_network_interface(ips: list[str], mac: str = None) -> NetworkInterface
         return NetworkInterface(macAddress=mac, ipv4Addresses=ip4s, ipv6Addresses=ip6s)
 
 
-def import_data_to_runzero(assets: List[ImportAsset]):
+def import_data_to_runzero(assets: list[ImportAsset]):
     """
     The code below gives an example of how to create a custom source and upload valid assets from a CSV to a site using
     the new custom source.
@@ -169,11 +162,11 @@ def import_data_to_runzero(assets: List[ImportAsset]):
 
     # get or create the custom source manager and create a new custom source
     custom_source_mgr = CustomIntegrationsAdmin(c)
-    my_asset_source = custom_source_mgr.get(name="automox")
+    my_asset_source = custom_source_mgr.get(name="Automox")
     if my_asset_source:
         source_id = my_asset_source.id
     else:
-        my_asset_source = custom_source_mgr.create(name="kandji")
+        my_asset_source = custom_source_mgr.create(name="automox")
         source_id = my_asset_source.id
 
     # create the import manager to upload custom assets
