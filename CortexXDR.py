@@ -6,7 +6,6 @@ import secrets
 import string
 import hashlib
 import os
-from flatten_json import flatten
 from ipaddress import ip_address
 from typing import Any, Dict, List
 
