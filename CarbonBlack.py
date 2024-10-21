@@ -92,10 +92,6 @@ def build_network_interface(ips: list[str], mac: str = None) -> NetworkInterface
 
 
 def import_data_to_runzero(assets: list[ImportAsset])
-    """
-    The code below gives an example of how to create a custom source and upload valid assets from a CSV to a site using
-    the new custom source.
-    """
     
     # create the runzero client
     c = runzero.Client()
