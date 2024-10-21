@@ -24,7 +24,7 @@ from cbc_sdk.platform import Device
 
 # API keys are required for using the runZero sdk. See https://www.runzero.com/docs/leveraging-the-api/
 RUNZERO_CLIENT_ID = ""  # OAuth client id. See https://console.runzero.com/account/api/clients
-RUNZERO_CLIENT_SECRET = os.environ['RUNZERO_OAUTH_SECRET']  # OAuth client secret. See https://console.runzero.com/account/api/clients
+RUNZERO_CLIENT_SECRET = ""  # OAuth client secret. See https://console.runzero.com/account/api/clients
 RUNZERO_ORG_ID = ""  # runZero organization ID. See https://console.runzero.com/organizations
 RUNZERO_SITE_NAME = ""  # Name of site within the above Organization. See https://console.runzero.com/sites
 RUNZERO_BASE_URL = "https://console.runZero.com/api/v1.0"
@@ -59,9 +59,9 @@ def get_assets():
             hostnames=device.name,
             firstSeenTS=device.registered_time,
             os=device.os,
-            osVersion=device.os_version
+            osVersion=device.os_version,
             customAttributes=custom_attrs
-            ))
+        ))
 
     return rz_import_assets
 
@@ -91,7 +91,7 @@ def build_network_interface(ips: list[str], mac: str = None) -> NetworkInterface
 
 
 
-def import_data_to_runzero(assets: list[ImportAsset])
+def import_data_to_runzero(assets: list[ImportAsset]):
     
     # create the runzero client
     c = runzero.Client()
