@@ -24,11 +24,11 @@ AUTOMOX_URL = "https://console.automox.com/api/servers"
 ## Automox Bearer Token (can also use os.environ variable)
 TOKEN = ""
 
-# runZero information
+### runZero information
 RUNZERO_CLIENT_ID = "runZero Client ID"
 RUNZERO_CLIENT_SECRET = "runZero Client Secret"
 RUNZERO_BASE_URL = "https://console.runZero.com/api/v1.0"
-RUNZERO_ORG_ID = "runZero Org ID"
+RUNZERO_ORG_ID = "runZero ORG ID"
 RUNZERO_SITE_NAME = "runZero Site Name"
 
 ## API headers used in the requests
